@@ -1,10 +1,12 @@
 package src.main.java.com.bookstore.resources;
+
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import src.main.java.com.bookstore.models.Customer;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @Path("/customers")
 public class CustomerResource {
@@ -15,6 +17,9 @@ public class CustomerResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createCustomer(Customer customer) {
+        if (customer == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Customer cannot be null").build();
+        }
         customer.setId(currentId++);
         customers.put(customer.getId(), customer);
         return Response.status(Response.Status.CREATED).entity(customer).build();
@@ -23,6 +28,9 @@ public class CustomerResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllCustomers() {
+        if (customers.isEmpty()) {
+            return Response.status(Response.Status.NO_CONTENT).build();
+        }
         return Response.ok(new ArrayList<>(customers.values())).build();
     }
 
@@ -42,6 +50,9 @@ public class CustomerResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateCustomer(@PathParam("id") int id, Customer updatedCustomer) {
+        if (updatedCustomer == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Customer cannot be null").build();
+        }
         Customer customer = customers.get(id);
         if (customer == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("Customer not found").build();
